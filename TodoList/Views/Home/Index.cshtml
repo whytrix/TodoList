@@ -1,0 +1,24 @@
+﻿@using TodoList.Enums;
+@using TodoList.Models;
+@{
+    List<TodoItem> todoItems = new List<TodoItem>
+    {
+        new TodoItem { Title = "Learn ASP.NET Core", IsCompleted = false, Priority = PriorityLevel.Medium },
+        new TodoItem { Title = "Build a Todo App", IsCompleted = false, Priority = PriorityLevel.High },
+        new TodoItem { Title = "Deploy to Azure", IsCompleted = false, Priority = PriorityLevel.Low }
+    };
+}
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Todo App</title>
+</head>
+<body>
+    @foreach (var todo in todoItems)
+    {
+        <div>
+            @todo.Title - @(todo.IsCompleted ? "✔️" : "❌") - @todo.Priority.ToString()
+        </div>
+    }
+</body>
+</html>
