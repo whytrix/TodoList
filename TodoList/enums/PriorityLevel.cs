@@ -1,4 +1,4 @@
-namespace TodoList.Enums
+﻿namespace TodoList.Enums
 {
     public enum PriorityLevel
     {
