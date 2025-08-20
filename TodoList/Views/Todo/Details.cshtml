@@ -1,0 +1,48 @@
+﻿@model TodoItem
+@{
+    ViewBag.Title = "Todo Details";
+}
+
+<h1>Todo Details</h1>
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <td>标题</td>
+            <td>@Model.Title</td>
+        </tr>
+        <tr>
+            <td>描述</td>
+            <td>@Model.Description</td>
+        </tr>
+        <tr>
+            <td>截止日期</td>
+            <td>@Model.DueDate?.ToString("yyyy/MM/dd")</td>
+        </tr>
+        <tr>
+            <td>优先级</td>
+            <td>
+                @switch (@Model.Priority)
+                {
+                    case PriorityLevel.Low:
+                        @: 低
+                        break;
+                    case PriorityLevel.Medium:
+                        @: 中
+                        break;
+                    case PriorityLevel.High:
+                        @: 高
+                        break;
+                }
+            </td>
+        </tr>
+        <tr>
+            <td>状态</td>
+            <td>
+                <span class="@Model.IsCompleted ? text-success : text-danger">
+                    @(Model.IsCompleted ? "✔️" : "❌")
+                </span>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<a class="btn-link" href="/todo/all">返回上一页</a>
