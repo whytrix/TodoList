@@ -1,0 +1,44 @@
+﻿@model IEnumerable<TodoItem>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>标题</th>
+            <th>截止日期</th>
+            <th>状态</th>
+            <th>优先级</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var todo in Model)
+        {
+            <tr>
+                <td>@todo.Title</td>
+                <td>@todo.DueDate?.ToString("yyyy/MM/dd")</td>
+                <td>
+                    <span class="@todo.IsCompleted ? text-success : text-danger">
+                        @(todo.IsCompleted ? "✔️" : "❌")
+                    </span>
+                </td>
+                <td>
+                    @switch (todo.Priority)
+                    {
+                        case PriorityLevel.Low:
+                            @: 低
+                            break;
+                        case PriorityLevel.Medium:
+                            @: 中
+                            break;
+                        case PriorityLevel.High:
+                            @: 高
+                            break;
+                    }
+                </td>
+                <td>
+                    <a class="text-primary" href="/todo/details/@todo.Id">详情</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

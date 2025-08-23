@@ -1,9 +1,9 @@
 ﻿@model TodoItem
 @{
-    ViewBag.Title = "Todo Details";
+    ViewBag.Title = "事项详情";
+    ViewBag.ContainerTitle = "事项详情";
 }
 
-<h1>Todo Details</h1>
 <table class="table table-bordered">
     <tbody>
         <tr>
@@ -45,4 +45,12 @@
         </tr>
     </tbody>
 </table>
-<a class="btn-link" href="/todo/all">返回上一页</a>
+<button class="btn btn-link" id="btn-back" type="button">返回上一页</button>
+
+@section Scripts {
+    <script type="text/javascript">
+        document.querySelector("#btn-back").addEventListener("click", () => {
+            history.back();
+        });
+    </script>
+}

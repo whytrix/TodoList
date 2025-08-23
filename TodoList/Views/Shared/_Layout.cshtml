@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>@ViewBag.Title - Todo Demo</title>
+    <title>@ViewBag.Title - 待办事项系统</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/style.css" />
@@ -12,17 +12,17 @@
     <div>
         <nav class="navbar navbar-expand-lg bg-body-tertiary shadow">
             <div class="container-fluid">
-                <a class="navbar-brand" href="#">Todo Demo</a>
+                <a class="navbar-brand" href="/index">Todo</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link" href="/index">Home</a>
+                            <a class="nav-link" href="/index">首页</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/todo/all">Todos</a>
+                            <a class="nav-link" href="/todo/all">待办事项</a>
                         </li>
                     </ul>
                 </div>
@@ -30,11 +30,17 @@
         </nav>
 
         <div class="container mt-3">
+            <h2>@ViewBag.ContainerTitle</h2>
+            <hr />
             @RenderBody()
         </div>
-                
+
     </div>
 
     <script type="text/javascript" src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    @{
+        await RenderSectionAsync("Scripts", false);
+    }    
 </body>
 </html>

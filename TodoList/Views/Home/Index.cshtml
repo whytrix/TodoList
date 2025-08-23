@@ -1,8 +1,18 @@
 ﻿@model IEnumerable<TodoItem>
 
 @{
-    ViewBag.Title = "Home Page";
+    ViewBag.Title = "主页";
+    ViewBag.ContainerTitle = "今日待办事项";
 }
 
-<h1>Home Page</h1>
-<p>Welcome to home page</p>
+<div id="today-todos"></div>
+
+@section Scripts {
+    <script type="text/javascript">
+        window.addEventListener("load", async () => {
+            const response = await fetch("/todo/today");
+            const htmlText = await response.text();
+            document.querySelector("#today-todos").innerHTML = htmlText;
+        });
+    </script>
+}

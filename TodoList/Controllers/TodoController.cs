@@ -1,57 +1,67 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TodoList.Data;
+using TodoList.Enums;
 using TodoList.Models;
 using TodoList.ViewModels;
-using TodoList.Enums;
 
 namespace TodoList.Controllers
 {
     [Route("todo")]
     public class TodoController : Controller
     {
-        private static List<TodoItem> todos = new List<TodoItem>
-            {
-                new TodoItem
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "学习ASP.NET Core",
-                    Description = "学习ASP.NET Core的基础知识和高级特性",
-                    DueDate = DateTime.Now.AddDays(7),
-                    Priority = PriorityLevel.High,
-                    IsCompleted = false
-                },
-                new TodoItem
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "完成项目报告",
-                    Description = "撰写并提交项目报告",
-                    DueDate = DateTime.Now.AddDays(3),
-                    Priority = PriorityLevel.Medium,
-                    IsCompleted = true
-                },
-                new TodoItem
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "学习SQL",
-                    Description = "学习SQL的基础知识",
-                    DueDate = DateTime.Now.AddDays(2),
-                    Priority = PriorityLevel.Low,
-                    IsCompleted = false
-                }
-            };
-
+        /// <summary>
+        /// todo默认页
+        /// </summary>
+        /// <param name="isCompleted">是否完成</param>
+        /// <returns>View</returns>
         [HttpGet("all")]
-        public IActionResult Index([FromQuery(Name = "is_completed")] bool? isCompleted)
+        public IActionResult Index()
         {
-            IEnumerable<TodoItem> todosMatch = todos;
+            return View();
+        }
+
+        /// <summary>
+        /// 获取今天待完成todos
+        /// </summary>
+        /// <returns>PartialView</returns>
+        [HttpGet("today")]
+        public IActionResult Today()
+        {
+            IEnumerable<TodoItem> todosMatch = DataContext.todos.Where(t => t.DueDate?.Date == DateTime.Now.Date).OrderByDescending(t => t.Priority);
+            return PartialView("_TodoListPartialView", todosMatch);
+        }
+
+        /// <summary>
+        /// 根据条件检索todos
+        /// </summary>
+        /// <returns>PartialView</returns>
+        [HttpGet("search")]
+        public IActionResult Search([FromQuery]string? title, [FromQuery(Name = "due_date")]DateTime? dueDate, [FromQuery(Name = "is_completed")] bool? isCompleted)
+        {
+            IEnumerable<TodoItem> todosMatch = DataContext.todos;
+
+            if (title != null)
+            {
+                todosMatch = todosMatch.Where(t => t.Title.Contains(title, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (dueDate.HasValue)
+            {
+                todosMatch = todosMatch.Where(t => t.DueDate?.Date == dueDate?.Date);
+            }
 
             if (isCompleted.HasValue)
             {
                 todosMatch = todosMatch.Where(t => t.IsCompleted == isCompleted);
             }
-
-            return View(todosMatch);
+            return PartialView("_TodoListPartialView", todosMatch);
         }
 
+        /// <summary>
+        /// 获取某一个todo
+        /// </summary>
+        /// <param name="id">TodoID</param>
+        /// <returns>View</returns>
         [HttpGet("details/{id}")]
         public IActionResult Details([FromRoute] string id)
         {
@@ -65,10 +75,15 @@ namespace TodoList.Controllers
                 return BadRequest("无效的ID格式");
             }
 
-            var todoItem = todos.FirstOrDefault(t => t.Id == todoId);
+            var todoItem = DataContext.todos.FirstOrDefault(t => t.Id == todoId);
             return View(todoItem);
         }
 
+        /// <summary>
+        /// 创建新的todo
+        /// </summary>
+        /// <param name="model">要创建的todo</param>
+        /// <returns>JSON</returns>
         [HttpPost("create")]
         public IActionResult DoCreate(CreateTodoItemViewModel model)
         {

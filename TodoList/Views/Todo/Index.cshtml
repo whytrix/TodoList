@@ -1,49 +1,71 @@
 ﻿@model IEnumerable<TodoItem>
 
 @{
-    ViewBag.Title = "Todo List";
+    ViewBag.Title = "待办事项";
+    ViewBag.ContainerTitle = "待办事项";
 }
 
-<h1>Todo List</h1>
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>标题</th>
-            <th>截止日期</th>
-            <th>状态</th>
-            <th>优先级</th>
-            <th>操作</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var todo in Model)
-        {
-            <tr>
-                <td>@todo.Title</td>
-                <td>@todo.DueDate?.ToString("yyyy/MM/dd")</td>
-                <td>
-                    <span class="@todo.IsCompleted ? text-success : text-danger">
-                        @(todo.IsCompleted ? "✔️" : "❌")
-                    </span>
-                </td>
-                <td>
-                    @switch (todo.Priority)
-                    {
-                        case PriorityLevel.Low:
-                            @: 低
-                            break;
-                        case PriorityLevel.Medium:
-                            @: 中
-                            break;
-                        case PriorityLevel.High:
-                            @: 高
-                            break;
-                    }
-                </td>
-                <td>
-                    <a class="btn-link" href="/todo/details/@todo.Id">详情</a>
-                </td>
-            </tr>
+<div class="pt-3 pb-3">
+    <form class="card-body" id="search-form">
+        <div class="row">
+            <div class="col-3 row">
+                <label class="form-label col-sm-3 col-form-label" for="inp-title">标题：</label>
+                <div class="col-sm-9">
+                    <input class="form-control" type="text" id="inp-title" placeholder="请输入标题" />
+                </div>
+            </div>
+            <div class="col-3 row">
+                <label class="form-label col-sm-5 col-form-label" for="inp-duedate">截止日期：</label>
+                <div class="col-sm-7">
+                    <input class="form-control" id="inp-duedate" type="date"  />
+                </div>
+            </div>
+            <div class="col-3 row">
+                <label class="form-label col-sm-3 col-form-label" for="sel-status">状态：</label>
+                <div class="col-sm-9">
+                    <select id="sel-status" class="form-select" aria-label="Default select example">
+                        <option value="" selected>所有</option>
+                        <option value="true">已完成</option>
+                        <option value="false">未完成</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-3 row">
+                <div class="col-sm-4">
+                    <button class="btn btn-outline-secondary" type="reset">重置</button>
+                </div>
+                <div class="col-sm-4">
+                    <button class="btn btn-outline-success" id="btn-search" type="button">搜索</button>
+                </div>
+                <div class="col-sm-4">
+                    <button class="btn btn-outline-primary" type="button">添加</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div id="todo-list"></div>
+
+@section Scripts {
+    <script type="text/javascript">
+        window.addEventListener("load", async () => {
+            await searchTodos();
+        });
+
+        document.querySelector("#btn-search").addEventListener("click", async () => {
+            await searchTodos();
+        });
+
+        const searchTodos = async () => {
+            const title = document.querySelector("#inp-title").value;
+            const duedate = document.querySelector("#inp-duedate").value;
+            const status = document.querySelector("#sel-status").value;
+            const response = await fetch(`/todo/search?title=${title}&due_date=${duedate}&is_completed=${status}`,{
+                method: "GET"
+            });
+            const htmlText = await response.text();
+            document.querySelector("#todo-list").innerHTML = htmlText;
         }
-    </tbody>
-</table>
+    </script>
+}
