@@ -8,9 +8,8 @@ namespace TodoList.Attributes
 
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
-            if (value != null)
+            if (value != null && DateTime.TryParse(value.ToString(), out DateTime date))
             {
-                DateTime date = (DateTime)value;
                 if (date < DateTime.Today)
                 {
                     return new ValidationResult(string.Format(ErrorMessage ?? DefaultErrorMessage));

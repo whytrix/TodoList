@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TodoList.Data;
-using TodoList.Enums;
 using TodoList.Models;
 using TodoList.ViewModels;
 
@@ -23,23 +22,27 @@ namespace TodoList.Controllers
         /// <summary>
         /// 获取今天待完成todos
         /// </summary>
-        /// <returns>PartialView</returns>
+        /// <returns>JSON</returns>
         [HttpGet("today")]
         public IActionResult Today()
         {
             IEnumerable<TodoItem> todosMatch = DataContext.todos.Where(t => t.DueDate?.Date == DateTime.Now.Date).OrderByDescending(t => t.Priority);
-            return PartialView("_TodoListPartialView", todosMatch);
+            return Json(todosMatch);
         }
 
         /// <summary>
         /// 根据条件检索todos
         /// </summary>
-        /// <returns>PartialView</returns>
+        /// <param name="title">标题</param>
+        /// <param name="dueDate">截止日期</param>
+        /// <param name="isCompleted">状态</param>
+        /// <returns>JSON</returns>
         [HttpGet("search")]
-        public IActionResult Search([FromQuery]string? title, [FromQuery(Name = "due_date")]DateTime? dueDate, [FromQuery(Name = "is_completed")] bool? isCompleted)
+        public IActionResult Search([FromQuery]string? title, [FromQuery]DateTime? dueDate, [FromQuery] bool? isCompleted)
         {
             IEnumerable<TodoItem> todosMatch = DataContext.todos;
 
+            //搜索
             if (title != null)
             {
                 todosMatch = todosMatch.Where(t => t.Title.Contains(title, StringComparison.OrdinalIgnoreCase));
@@ -54,7 +57,8 @@ namespace TodoList.Controllers
             {
                 todosMatch = todosMatch.Where(t => t.IsCompleted == isCompleted);
             }
-            return PartialView("_TodoListPartialView", todosMatch);
+
+            return Json(todosMatch);
         }
 
         /// <summary>
@@ -85,7 +89,7 @@ namespace TodoList.Controllers
         /// <param name="model">要创建的todo</param>
         /// <returns>JSON</returns>
         [HttpPost("create")]
-        public IActionResult DoCreate(CreateTodoItemViewModel model)
+        public IActionResult DoCreate([FromBody] CreateTodoItemDto model)
         {
             if (!ModelState.IsValid)
             {
